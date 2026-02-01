@@ -1,0 +1,8 @@
+{
+  "name": "Meme Mirror AI",
+  "description": "A real-time expression tracking app that matches your current mood and actions with iconic internet memes, keeping a history of your best captures.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
