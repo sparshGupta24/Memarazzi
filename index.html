@@ -23,6 +23,42 @@
     .animate-progress-shrink {
       animation: progress-shrink 10s linear forwards;
     }
+    @keyframes paparazzi-flash {
+      0%, 100% { opacity: 0.2; transform: scale(1); filter: brightness(1); }
+      5% { opacity: 1; transform: scale(1.1); filter: brightness(3); }
+      10% { opacity: 0.2; transform: scale(1); filter: brightness(1); }
+    }
+    @keyframes paparazzi-pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(0.95); opacity: 0.3; }
+    }
+    @keyframes spin-slow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes glow-pulse-blue {
+      0%, 100% { box-shadow: 0 0 20px rgba(37, 99, 235, 0.2), 0 0 40px rgba(37, 99, 235, 0.1); }
+      50% { box-shadow: 0 0 40px rgba(37, 99, 235, 0.6), 0 0 80px rgba(37, 99, 235, 0.3); }
+    }
+    @keyframes glow-pulse-amber {
+      0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.1); }
+      50% { box-shadow: 0 0 30px rgba(245, 158, 11, 0.4); }
+    }
+    .animate-paparazzi-active {
+      animation: paparazzi-flash 3s infinite;
+    }
+    .animate-paparazzi-paused {
+      animation: paparazzi-pulse 2s infinite;
+    }
+    .animate-glow-blue {
+      animation: glow-pulse-blue 3s infinite ease-in-out;
+    }
+    .animate-glow-amber {
+      animation: glow-pulse-amber 4s infinite ease-in-out;
+    }
+    .animate-spin-slow {
+      animation: spin-slow 12s linear infinite;
+    }
     ::-webkit-scrollbar {
       width: 6px;
     }

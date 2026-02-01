@@ -71,9 +71,12 @@ const App: React.FC = () => {
     const now = Date.now();
     
     // Safety check: is video ready?
-    if (!videoRef.current || !canvasRef.current || isAnalyzing || !isTracking) return;
+    if (!videoRef.current || !canvasRef.current || isAnalyzing) return;
+    
+    // If not manual, only run if tracking is active
+    if (!isManual && !isTracking) return;
 
-    // Minimum cooldown between any two analyses (e.g. 10s) to protect quota
+    // Minimum cooldown between any two automatic analyses to protect quota
     if (!isManual && (now - lastAnalysisTime.current < 15000)) return;
 
     setIsAnalyzing(true);
@@ -94,7 +97,7 @@ const App: React.FC = () => {
         const base64Image = rawSnapshot.split(',')[1];
         
         const analysis = await analyzeFrame(base64Image, humorStyle);
-        const compositeMemeUrl = await createMemeImage(rawSnapshot, analysis.memeTitle, analysis.memeCaption);
+        const compositeMemeUrl = await createMemeImage(rawSnapshot, analysis.memeTitle, analysis.memeCaption, humorStyle);
 
         const newMatch: MemeMatch = {
           id: Date.now().toString(),
@@ -139,8 +142,8 @@ const App: React.FC = () => {
     lastManualClickTime.current = now;
     performAnalysis(true);
     
-    // Reset the automatic interval cycle
-    if (intervalRef.current) {
+    // Reset the automatic interval cycle if tracking is on
+    if (isTracking && intervalRef.current) {
       window.clearInterval(intervalRef.current);
       intervalRef.current = window.setInterval(() => {
         performAnalysis();

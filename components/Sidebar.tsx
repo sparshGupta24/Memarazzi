@@ -9,6 +9,38 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ history, onClose, onRevisit }) => {
+  const getShareData = async (item: MemeMatch) => {
+    const imageUrl = item.memeImageUrl || item.snapshotUrl;
+    const shareText = `Check out this meme from my history!\n\n"${item.memeTitle}"`;
+    const response = await fetch(imageUrl);
+    const blob = await response.blob();
+    const file = new File([blob], `meme-${item.id}.png`, { type: 'image/png' });
+    return { file, shareText };
+  };
+
+  const handleShare = async (e: React.MouseEvent, item: MemeMatch, type: 'wa' | 'mail' | 'native') => {
+    e.stopPropagation();
+    try {
+      const { file, shareText } = await getShareData(item);
+
+      if (type === 'wa') {
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], text: shareText });
+        } else {
+          window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
+        }
+      } else if (type === 'mail') {
+        window.location.href = `mailto:?subject=Funny Meme!&body=${encodeURIComponent(shareText)}`;
+      } else {
+        if (navigator.share) {
+          await navigator.share({ files: [file], title: 'Meme Mirror', text: shareText });
+        }
+      }
+    } catch (err) {
+      console.error("Share failed", err);
+    }
+  };
+
   return (
     <aside className="w-80 bg-gray-900/95 backdrop-blur-2xl border-r border-gray-800 flex flex-col h-full shadow-2xl">
       <div className="p-6 pt-20 border-b border-gray-800 flex items-center justify-between">
@@ -42,10 +74,26 @@ const Sidebar: React.FC<SidebarProps> = ({ history, onClose, onRevisit }) => {
                     alt="Meme" 
                     className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" 
                   />
-                  <div className="absolute top-2 right-2 flex gap-1">
-                    <span className="text-[8px] bg-black/60 backdrop-blur-md text-white px-2 py-0.5 rounded-full uppercase font-black border border-white/10">
-                      {item.humorStyle}
-                    </span>
+                  <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button 
+                      onClick={(e) => handleShare(e, item, 'wa')}
+                      className="p-1.5 bg-[#25D366] text-white rounded-lg border border-white/20 hover:bg-[#20ba59] transition-colors shadow-lg"
+                      title="Share via WhatsApp"
+                    >
+                      <i className="fa-brands fa-whatsapp text-[10px]"></i>
+                    </button>
+                    <button 
+                      onClick={(e) => handleShare(e, item, 'mail')}
+                      className="p-1.5 bg-blue-500 text-white rounded-lg border border-white/20 hover:bg-blue-400 transition-colors shadow-lg"
+                      title="Share via Email"
+                    >
+                      <i className="fa-solid fa-envelope text-[10px]"></i>
+                    </button>
+                  </div>
+                  <div className="absolute bottom-2 left-2">
+                     <span className="text-[8px] bg-black/60 backdrop-blur-md text-white px-2 py-0.5 rounded-full uppercase font-black border border-white/10">
+                        {item.humorStyle}
+                     </span>
                   </div>
                 </div>
                 
@@ -69,8 +117,8 @@ const Sidebar: React.FC<SidebarProps> = ({ history, onClose, onRevisit }) => {
         )}
       </div>
       
-      <div className="p-4 border-t border-gray-800 text-[10px] text-gray-600 font-mono text-center">
-        CLICK TO RE-OPEN
+      <div className="p-4 border-t border-gray-800 text-[10px] text-gray-600 font-mono text-center uppercase tracking-widest">
+        Click a meme to re-open
       </div>
     </aside>
   );
