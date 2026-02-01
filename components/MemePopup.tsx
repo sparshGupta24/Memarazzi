@@ -9,73 +9,57 @@ interface MemePopupProps {
 
 const MemePopup: React.FC<MemePopupProps> = ({ match, isAnalyzing }) => {
   return (
-    <div className={`w-[85vw] max-w-sm bg-black border-4 border-white rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden transition-all duration-300 ring-4 ring-black/40`}>
+    <div className={`w-[90vw] max-w-[400px] bg-white rounded-[2rem] shadow-[0_40px_100px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-300 border-[12px] border-white`}>
       {/* Visual Header */}
-      <div className="bg-white py-2 px-6 flex justify-between items-center">
-        <span className="text-black text-[10px] font-black tracking-widest uppercase">MATCHED_MEME.EXE</span>
-        <div className="flex gap-1">
-          <div className="w-1.5 h-1.5 bg-black rounded-full"></div>
-          <div className="w-1.5 h-1.5 bg-black/40 rounded-full"></div>
+      <div className="bg-black py-2 px-6 flex justify-between items-center">
+        <span className="text-white text-[9px] font-black tracking-widest uppercase italic">GEN_LOCAL_400x400</span>
+        <div className="flex gap-1.5">
+          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
+          <div className="w-1.5 h-1.5 bg-white/20 rounded-full"></div>
         </div>
       </div>
 
-      <div className="relative bg-black aspect-square w-full">
+      <div className="relative bg-black aspect-square w-full group">
+        {/* The mutated 400x400 image - The core of the request */}
         <img 
-          src={match.snapshotUrl} 
-          alt="Meme Mirror" 
-          className="w-full h-full object-cover opacity-90"
+          src={match.memeImageUrl || match.snapshotUrl} 
+          alt="Meme Mirror Result" 
+          className="w-full h-full object-contain pointer-events-none"
         />
         
-        {/* Meme Text Overlay */}
-        <div className="absolute inset-0 flex flex-col justify-between p-4 pointer-events-none">
-          <h3 className="text-center text-white text-xl font-black uppercase tracking-tighter drop-shadow-[0_4px_0_rgba(0,0,0,1)] [text-shadow:_-2px_-2px_0_#000,2px_-2px_0_#000,_-2px_2px_0_#000,2px_2px_0_#000]">
-            {match.memeTitle}
-          </h3>
-          <p className="text-center text-white text-lg font-black uppercase leading-tight drop-shadow-[0_4px_0_rgba(0,0,0,1)] [text-shadow:_-2px_-2px_0_#000,2px_-2px_0_#000,_-2px_2px_0_#000,2px_2px_0_#000]">
-            {match.memeCaption}
-          </p>
-        </div>
+        {/* Hover info overlay */}
+        <div className="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/10 transition-colors duration-500"></div>
       </div>
 
-      <div className="p-4 bg-white space-y-3">
-        <div className="flex items-center gap-3">
-           <div className="flex-1">
-              <p className="text-[8px] text-gray-400 uppercase font-black tracking-widest leading-none mb-1">Aura</p>
-              <p className="text-xs text-black font-bold leading-none truncate">{match.mood}</p>
+      <div className="p-6 bg-white space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+           <div className="bg-gray-50 p-3 rounded-2xl border border-gray-100">
+              <p className="text-[7px] text-gray-400 uppercase font-black tracking-widest mb-1">DETECTION_MOOD</p>
+              <p className="text-[11px] text-black font-black uppercase truncate">{match.mood}</p>
            </div>
-           <div className="flex-1">
-              <p className="text-[8px] text-gray-400 uppercase font-black tracking-widest leading-none mb-1">Action</p>
-              <p className="text-xs text-black font-bold leading-none truncate">{match.action}</p>
+           <div className="bg-gray-50 p-3 rounded-2xl border border-gray-100">
+              <p className="text-[7px] text-gray-400 uppercase font-black tracking-widest mb-1">DETECTION_POSE</p>
+              <p className="text-[11px] text-black font-black uppercase truncate">{match.action}</p>
            </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-3">
            <button 
               onClick={() => {
                 const link = document.createElement('a');
-                link.download = `meme-${match.id}.png`;
-                link.href = match.snapshotUrl;
+                link.download = `mirror-meme-${Date.now()}.png`;
+                link.href = match.memeImageUrl || match.snapshotUrl;
                 link.click();
               }}
-              className="flex-1 bg-black text-white py-3 rounded-xl font-black text-xs hover:invert transition-all flex items-center justify-center gap-2"
+              className="flex-1 bg-black text-white py-4 rounded-2xl font-black text-xs hover:bg-blue-600 transition-all flex items-center justify-center gap-2 active:scale-95 shadow-xl shadow-black/10"
            >
-             <i className="fa-solid fa-download"></i> SAVE
+             <i className="fa-solid fa-download"></i> SAVE IMAGE
            </button>
-           {match.sourceUrl && (
-             <a 
-               href={match.sourceUrl} 
-               target="_blank" 
-               rel="noopener noreferrer"
-               className="p-3 border-2 border-black text-black rounded-xl font-black text-xs hover:bg-black hover:text-white transition-all flex items-center justify-center"
-             >
-               <i className="fa-solid fa-share"></i>
-             </a>
-           )}
         </div>
       </div>
       
       {/* 10s Timer Progress Bar */}
-      <div className="h-1.5 w-full bg-gray-200">
+      <div className="h-2 w-full bg-gray-100">
         <div className="h-full bg-blue-500 animate-progress-shrink origin-left"></div>
       </div>
     </div>

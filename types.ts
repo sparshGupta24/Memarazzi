@@ -9,6 +9,7 @@ export interface MemeMatch {
   snapshotUrl: string;
   memeImageUrl?: string;
   sourceUrl?: string;
+  humorStyle: string;
 }
 
 export interface AnalysisResult {
@@ -17,3 +18,5 @@ export interface AnalysisResult {
   memeTitle: string;
   memeCaption: string;
 }
+
+export type HumorStyle = 'classic' | 'savage' | 'wholesome' | 'sarcastic' | 'brainrot';
